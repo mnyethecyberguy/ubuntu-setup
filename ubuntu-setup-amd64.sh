@@ -1,11 +1,11 @@
 #!/bin/bash
 
-USER="<username>"
+USER="$(whoami)"
 # Update the minimal install
 echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee "/etc/sudoers.d/$USER"
 sudo apt update && sudo apt upgrade
 
-# Install Utilities
+# Install Utilities and miscellaneous tools
 sudo apt install -y curl wget jq moreutils git unzip zip ca-certificates apt-transport-https lsb-release gnupg gpg software-properties-common
 
 # Install VSCode
@@ -20,10 +20,9 @@ sudo ./aws/install && \
 rm awscliv2.zip
 
 # Azure CLI
-# NOTE: if using a 23.04 distro, change 'AZ_REPO="jammy"' (22.04)
+# NOTE: if using a 23.04 distro, change "(lsb_release -cs)" to "jammy" (22.04)
 curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null && \
-AZ_REPO=$(lsb_release -cs) && \
-echo "deb [arch="$(dpkg --print-architecture)"] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list && \
+echo "deb [arch="$(dpkg --print-architecture)"] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/azure-cli.list && \
 sudo apt update && \
 sudo apt install -y azure-cli
  
@@ -57,3 +56,10 @@ sudo sysctl -w fs.inotify.max_user_watches=524288 && \
 echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf && \
 sudo sysctl -w vm.max_map_count=262144 && \
 echo "vm.max_map_count=262144" | sudo tee -a /etc/sysctl.conf
+
+# Terraform
+# NOTE: if using a 23.04 distro, change "$(lsb_release -cs)" to "jammy"
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null && \
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list && \
+sudo apt update && \
+sudo apt install -y terraform
