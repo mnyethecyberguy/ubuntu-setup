@@ -5,7 +5,7 @@ USER="<username>"
 echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee "/etc/sudoers.d/$USER"
 sudo apt update && sudo apt upgrade
 
-# Install Utilities
+# Install Utilities and dependencies
 sudo apt install -y curl wget jq moreutils git unzip zip ca-certificates apt-transport-https lsb-release gnupg gpg software-properties-common
 
 # Install VSCode
@@ -59,3 +59,10 @@ sudo sysctl -w fs.inotify.max_user_watches=524288 && \
 echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf && \
 sudo sysctl -w vm.max_map_count=262144 && \
 echo "vm.max_map_count=262144" | sudo tee -a /etc/sysctl.conf
+
+# Terraform
+# NOTE: if using a 23.04 distro, change "$(lsb_release -cs)" to "jammy"
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null && \
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list && \
+sudo apt update && \
+sudo apt install -y terraform

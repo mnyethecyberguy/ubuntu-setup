@@ -5,7 +5,7 @@ USER="$(whoami)"
 echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee "/etc/sudoers.d/$USER"
 sudo apt update && sudo apt upgrade
 
-# Install Utilities and miscellaneous tools
+# Install Utilities and dependencies
 sudo apt install -y curl wget jq moreutils git unzip zip ca-certificates apt-transport-https lsb-release gnupg gpg software-properties-common
 
 # Install VSCode
